@@ -32,6 +32,8 @@ import com.amazonaws.services.s3.model._
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder
 import com.amazonaws.services.s3.transfer.model.UploadResult
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest
 import play.api.libs.iteratee.Enumerator
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.fileupload.quarantine.FileData
@@ -98,6 +100,7 @@ case class StreamWithMetadata(stream: StreamResult, metadata: Metadata)
 
 class S3JavaSdkService extends S3Service {
   val awsConfig = new AwsConfig()
+  val roleArn = "arn:aws:iam::9999999:role/s3_role2"
 
   val credentials = new BasicAWSCredentials(awsConfig.accessKeyId, awsConfig.secretAccessKey)
 
@@ -110,6 +113,11 @@ class S3JavaSdkService extends S3Service {
   ) { endpoint =>
     s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, "local-test"))
   }.build()
+
+  val assumedRole = new AssumeRoleRequest()
+    .withRoleArn(roleArn)
+    .withRoleSessionName("assumedRole")
+
 
   val transferManager =
     TransferManagerBuilder.standard()

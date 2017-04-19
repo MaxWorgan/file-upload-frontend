@@ -41,6 +41,8 @@ trait S3TestController { self: Controller =>
   def filesInTransient() = listFilesInBucket(transientBucketName)
 
   def listFilesInBucket(bucketName: String) = Action {
+//    Logger.info(s"listFilesInBucket: $bucketName")
+    Logger.debug(s"listFilesInBucket: $bucketName")
     val header = Source.single(s"Files in bucket `$bucketName` are: \n")
     val files =
       s3Service.listFilesInBucket(bucketName)
